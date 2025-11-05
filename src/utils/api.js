@@ -2,7 +2,7 @@ import axios from 'axios'
 import { getUserFromLocalStorage } from './localStorage'
 
 const api = axios.create({
-    baseURL: 'https://api.fikrat.online/api/v1'
+    baseURL: '<baseUrl>/api/v1'
 })
 
 api.interceptors.request.use((config) => {

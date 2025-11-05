@@ -20,26 +20,42 @@ export default function DynamicPage({ seminar }) {
 }
 
 export async function getStaticProps({ params }) {
-    const { data } = await api.get('/seminars')
-    const { seminars } = data.data
+    try {
+        const { data } = await api.get('/seminars')
+        const { seminars } = data.data
 
-    const seminar = seminars.find(s => s.slug === params.slug)
+        const seminar = seminars.find(s => s.slug === params.slug)
 
-    return {
-        props: { seminar }
+        return {
+            props: { seminar }
+        }
+    } catch {
+        console.warn("API unavailable — using fallback data.")
+        return {
+            props: {
+                category: { name: context.params.slug, description: "Data unavailable" },
+            },
+            revalidate: 60, // optional ISR
+        }
     }
 }
   
 export async function getStaticPaths({ locales }) {
-    const { data } = await api.get('/seminars')
-    const { seminars } = data.data
+    try {
+        const { data } = await api.get('/seminars')
+        const { seminars } = data.data
 
-    const paths = seminars
-                        .map((seminar) => locales.map((locale) => ({
-                            params: { slug: seminar.slug },
-                            locale
-                        })))
-                        .flat()
+        const paths = seminars
+                            .map((seminar) => locales.map((locale) => ({
+                                params: { slug: seminar.slug },
+                                locale
+                            })))
+                            .flat()
 
-    return { paths, fallback: true }
+        return { paths, fallback: true }
+    }
+    catch {
+        console.warn("API unavailable — building with no category paths.");
+        return { paths: [], fallback: 'blocking' }; 
+    }
 }

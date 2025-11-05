@@ -24,21 +24,36 @@ export default function DynamicPage({ category }) {
 }
 
 export async function getStaticProps({ params }) {
-    const { data } = await api.get('/categories')
-    const category = data.data.categories.find(c => c.slug === params.slug)
+    try {
+        const { data } = await api.get('/categories')
+        const category = data.data.categories.find(c => c.slug === params.slug)
 
-    return {
-        props: { category }
+        return {
+            props: { category }
+        }
+    } catch {
+        console.warn("API unavailable — using fallback data.")
+        return {
+            props: {
+                category: { name: context.params.slug, description: "Data unavailable" },
+            },
+            revalidate: 60, // optional ISR
+        };
     }
 }
   
 export async function getStaticPaths({ locales }) {
-    const { data } = await api.get('/categories')
-    const paths = data.data.categories.map((category) => locales.map((locale) => ({
-        params: { slug: category.slug },
-        locale
-    })))
-    .flat()
+    try {
+        const { data } = await api.get('/categories')
+        const paths = data.data.categories.map((category) => locales.map((locale) => ({
+            params: { slug: category.slug },
+            locale
+        })))
+        .flat()
 
-    return { paths, fallback: true }
+        return { paths, fallback: true }
+    } catch {
+        console.warn("API unavailable — building with no category paths.");
+        return { paths: [], fallback: 'blocking' }; 
+    }
 }
