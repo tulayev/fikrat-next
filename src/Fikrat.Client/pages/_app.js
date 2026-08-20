@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Provider } from 'react-redux'
-import { Inter } from '@next/font/google'
+import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import store from '../src/stores/store'
 import '../src/css/bootstrap.min.css'

@@ -1,34 +1,44 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Fikrat
 
-## Getting Started
+## Project layout
 
-First, run the development server:
+- `src/Fikrat.Client` — Next.js frontend (Pages Router)
+- `src/Fikrat.Api` — .NET 10 Minimal API backend
 
-```bash
-npm run dev
-# or
-yarn dev
+## Running the app locally
+
+### Quick start
+
+From the repo root:
+
+```powershell
+./dev.ps1
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This starts both the API (`http://localhost:5000`) and the frontend (`http://localhost:3000`), streaming their logs with `[api]`/`[client]` prefixes. Press `Ctrl+C` to stop both.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+### Manual / two-terminal fallback
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+Terminal 1 — API:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+```powershell
+cd src/Fikrat.Api
+dotnet run
+```
 
-## Learn More
+API runs at `http://localhost:5000`. Health check: `GET /health`. OpenAPI document (Development only): `GET /openapi/v1.json`.
 
-To learn more about Next.js, take a look at the following resources:
+Terminal 2 — frontend:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```powershell
+cd src/Fikrat.Client
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Frontend runs at `http://localhost:3000`.
 
-## Deploy on Vercel
+### Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- CORS on the API only allows the `http://localhost:3000`, `https://localhost:3000`, and `http://localhost:3001` origins. If the frontend runs on a different port, add it to the `FrontendCorsPolicy` in `src/Fikrat.Api/Program.cs`.
+- Auth is bearer-token based (`Authorization: Bearer <token>`, sent by the frontend's axios client), not cookie-based, so CORS does not need `AllowCredentials`.
+- The sample `Courses` endpoints (`/api/v1/courses`) are in-memory placeholders — data resets whenever the API restarts.

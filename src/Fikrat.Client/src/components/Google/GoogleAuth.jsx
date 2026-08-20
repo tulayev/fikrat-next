@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { signInUser } from '../../features/auth/authSlice'
 import { closeModal } from '../../features/modal/modalSlice'
-import jwtDecode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 import Image from 'next/image'
 
 export default function GoogleAuth() {
